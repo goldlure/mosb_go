@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"mosb_go/pkg/config"
 	"mosb_go/pkg/models"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -83,13 +83,12 @@ func sendBotResponse(chatID int64, text string) error {
 }
 
 func getBotToken() (string, error) {
-	config, err := config.LoadConfig("../../config.json")
-	if err != nil {
-		fmt.Println("Error loading configuration:", err)
-		return "", err
+	bot_token := os.Getenv("BOT_TOKEN")
+	if bot_token == "" {
+		return bot_token, errors.New("env: Bot token not found in environment variable")
 	}
 
-	return config.BotToken, nil
+	return bot_token, nil
 }
 
 func ConnectBot() {
