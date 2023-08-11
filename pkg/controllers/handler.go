@@ -1,11 +1,12 @@
-package main
+package controllers
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
-	utils "mosb_go/utils"
+	"mosb_go/pkg/config"
+	"mosb_go/pkg/models"
 	"net/http"
 	"strings"
 )
@@ -26,13 +27,9 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if !strings.Contains(strings.ToLower(body.Message.Text), "marco") {
-		return
-	}
-
 	// If the text contains marco, call the `sayPolo` function, which
 	// is defined below
-	if err := sayPolo(body.Message.Chat.ID); err != nil {
+	if err := sendBotResponse(body.Message.Chat.ID, strings.ToLower(body.Message.Text)); err != nil {
 		fmt.Println("error in sending reply:", err)
 		return
 	}
@@ -46,11 +43,19 @@ type sendMessageReqBody struct {
 	Text   string `json:"text"`
 }
 
-func sayPolo(chatID int64) error {
+func sendBotResponse(chatID int64, text string) error {
+	response := ""
+	if fn, ok := models.InputMap[text]; ok {
+		response = fn()
+	} else {
+		fmt.Println("Key not found:", text)
+		response = models.InputMap["/notFound"]()
+	}
+
 	// Create the request body struct
 	reqBody := &sendMessageReqBody{
 		ChatID: chatID,
-		Text:   "Polo!!",
+		Text:   response,
 	}
 	// Create the JSON body from the struct
 	reqBytes, err := json.Marshal(reqBody)
@@ -78,7 +83,7 @@ func sayPolo(chatID int64) error {
 }
 
 func getBotToken() (string, error) {
-	config, err := utils.LoadConfig("config.json")
+	config, err := config.LoadConfig("../../config.json")
 	if err != nil {
 		fmt.Println("Error loading configuration:", err)
 		return "", err
@@ -87,8 +92,6 @@ func getBotToken() (string, error) {
 	return config.BotToken, nil
 }
 
-// FInally, the main funtion starts our server on port 3000
-func main() {
-
+func ConnectBot() {
 	http.ListenAndServe(":3000", http.HandlerFunc(Handler))
 }
