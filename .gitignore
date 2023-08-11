@@ -1,0 +1,39 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Compiled binary executables
+*.exe
+*.out
+
+# Compiled object directories
+_obj/
+_test/
+
+# External dependency directories (https://golang.org/doc/go1.4#internalpackages)
+/vendor/
+
+# Compiled Go packages
+*.test
+
+# Go cache and generated files
+*.test
+*.prof
+.cpio
+*.cover
+*.s
+*.swp
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# MacOS and Linux temp files
+.idea/
+.vscode/
+*.DS_Store
+*.AppleDouble
+*.LSOverride
+
+# Configs
+config.properties
